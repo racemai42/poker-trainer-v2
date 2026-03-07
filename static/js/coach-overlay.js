@@ -236,9 +236,22 @@ function highlightPlayerHand(canvasId, position) {
     const img = canvas.previousElementSibling;
     if (!img) return;
     
-    // Set canvas size to match image
-    canvas.width = img.naturalWidth;
-    canvas.height = img.naturalHeight;
+    // Use DISPLAYED size, not natural size
+    const displayW = img.clientWidth;
+    const displayH = img.clientHeight;
+    const scaleX = displayW / img.naturalWidth;
+    const scaleY = displayH / img.naturalHeight;
+    
+    canvas.width = displayW;
+    canvas.height = displayH;
+    canvas.style.width = displayW + 'px';
+    canvas.style.height = displayH + 'px';
+    
+    // Scale the position coordinates
+    const sx = position.x * scaleX;
+    const sy = position.y * scaleY;
+    const sw = position.width * scaleX;
+    const sh = position.height * scaleY;
     
     const ctx = canvas.getContext('2d');
     
@@ -256,12 +269,12 @@ function highlightPlayerHand(canvasId, position) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         
         ctx.globalAlpha = alpha;
-        ctx.strokeRect(position.x, position.y, position.width, position.height);
+        ctx.strokeRect(sx, sy, sw, sh);
         
         // Add inner glow
         ctx.strokeStyle = '#ffeb3b'; // Yellow inner glow
         ctx.lineWidth = 1;
-        ctx.strokeRect(position.x + 1, position.y + 1, position.width - 2, position.height - 2);
+        ctx.strokeRect(sx + 1, sy + 1, sw - 2, sh - 2);
         
         // Reset for next frame
         ctx.strokeStyle = '#ff6b35';
