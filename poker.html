@@ -14,9 +14,11 @@
    <script charset="UTF-8" src=static/js/jsholdem/hands.js></script>
    <script charset="UTF-8" src=static/js/jsholdem/bot.js></script>
    <script charset="UTF-8" src=static/js/gui_if.js></script>
-   <!-- Coach Overlay -->
-   <link rel="stylesheet" href="static/css/coach-overlay.css">
-   <script src="static/js/coach-overlay.js"></script>
+   <!-- Coach System -->
+   <link rel="stylesheet" href="static/css/coach.css">
+   <script src="static/js/ranges.js"></script>
+   <script src="static/js/stats.js"></script>
+   <script src="static/js/coach.js"></script>
 </head>
 <body onload="parent.init()">
     <div id="poker_table" class="poker-table" data-uid="">
@@ -172,5 +174,69 @@
     <div id="game-response" class="response-normal">Game response</div>
     <div id="production-code">15/Jan/2024</div>
     <div id="modal-box"></div>
+
+    <!-- Coach Toggle Button -->
+    <button id="toggle-coach-btn">🎓 Coach</button>
+
+    <!-- Coach Panel -->
+    <div id="coach-panel" class="panel">
+        <div class="panel-header">
+            <h3>🎓 Coach</h3>
+            <button id="close-coach">&times;</button>
+        </div>
+        <div id="coach-content">
+            <div id="preflop-advice" class="advice-section">
+                <h4>Pre-flop Analysis</h4>
+                <div id="range-grid"></div>
+                <div id="preflop-feedback">
+                    <p>Play a hand to see pre-flop analysis...</p>
+                </div>
+            </div>
+            <div id="postflop-advice" class="advice-section">
+                <h4>Post-flop Analysis</h4>
+                <div id="postflop-feedback">
+                    <p>Post-flop analysis will appear here...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Panel -->
+    <div id="stats-panel" class="panel">
+        <div class="panel-header">
+            <h3>📊 Statistics</h3>
+            <button id="close-stats">&times;</button>
+        </div>
+        <div id="stats-content">
+            <div class="stats-overview">
+                <div class="stat-item">
+                    <label>Overall Accuracy</label>
+                    <div id="overall-accuracy" class="stat-value">0%</div>
+                </div>
+                <div class="stat-item">
+                    <label>Hands Played</label>
+                    <div id="hands-played" class="stat-value">0</div>
+                </div>
+            </div>
+            <div class="position-stats">
+                <h4>Accuracy by Position</h4>
+                <div id="position-breakdown"></div>
+            </div>
+            <button id="reset-stats-btn" class="btn danger">Reset Stats</button>
+        </div>
+    </div>
+
+    <!-- Initialize Coach System -->
+    <script>
+        // Initialize the coach system when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof Coach !== 'undefined') {
+                Coach.initialize();
+            }
+            if (typeof Stats !== 'undefined') {
+                Stats.initialize();
+            }
+        });
+    </script>
 </body>
 </html>

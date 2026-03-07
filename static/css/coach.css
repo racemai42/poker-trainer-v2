@@ -1,0 +1,432 @@
+/* Coach Panel Styles for Poker Trainer V2 */
+/* Extracted from v0 style.css and adapted for right-side sliding panel */
+
+/* Panels */
+.panel {
+    position: fixed;
+    top: 0;
+    right: -400px;
+    width: 400px;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.95);
+    backdrop-filter: blur(20px);
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    transition: right 0.3s ease;
+    z-index: 1000;
+    overflow-y: auto;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.panel.open {
+    right: 0;
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.panel-header h3 {
+    font-size: 1.3rem;
+    color: #ffd700;
+    margin: 0;
+}
+
+#close-coach, #close-stats {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+#close-coach:hover, #close-stats:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Coach Panel */
+#coach-content {
+    padding: 1rem;
+    color: white;
+}
+
+.advice-section {
+    margin-bottom: 2rem;
+}
+
+.advice-section h4 {
+    color: #ffd700;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+/* Range Grid */
+#range-grid {
+    display: grid;
+    grid-template-columns: repeat(13, 1fr);
+    gap: 2px;
+    margin-bottom: 1rem;
+    max-width: 350px;
+}
+
+.range-cell {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: bold;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: white;
+}
+
+.range-cell.pair {
+    background: #e74c3c;
+    color: white;
+}
+
+.range-cell.suited {
+    background: #27ae60;
+    color: white;
+}
+
+.range-cell.offsuit {
+    background: #2980b9;
+    color: white;
+}
+
+.range-cell.not-in-range {
+    background: #374151;
+    color: #9ca3af;
+    opacity: 0.6;
+}
+
+.range-cell.player-hand {
+    border: 3px solid #ffd700 !important;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.6) !important;
+    animation: pulse-highlight 2s infinite;
+    position: relative;
+    z-index: 2;
+}
+
+@keyframes pulse-highlight {
+    0%, 100% { 
+        border-color: #ffd700;
+        box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+    }
+    50% { 
+        border-color: #ff8c00;
+        box-shadow: 0 0 25px rgba(255, 140, 0, 0.8);
+    }
+}
+
+/* Feedback Styles */
+.feedback-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    border-radius: 6px;
+    font-weight: bold;
+}
+
+.feedback-header.correct {
+    background: rgba(34, 197, 94, 0.15);
+    border: 1px solid #22c55e;
+    color: #4ade80;
+}
+
+.feedback-header.incorrect {
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid #ef4444;
+    color: #f87171;
+}
+
+.feedback-header.suggestion {
+    background: rgba(59, 130, 246, 0.15);
+    border: 1px solid #3b82f6;
+    color: #60a5fa;
+}
+
+.feedback-icon {
+    font-size: 1.2rem;
+}
+
+.feedback-status {
+    font-size: 1rem;
+}
+
+.feedback-details {
+    margin-bottom: 1rem;
+}
+
+.feedback-details p {
+    margin: 0.5rem 0;
+    color: #e5e7eb;
+    font-size: 0.9rem;
+}
+
+.feedback-details strong {
+    color: #f9fafb;
+}
+
+.feedback-reasoning {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 1rem;
+    border-radius: 6px;
+    border-left: 4px solid #6b7280;
+    color: #d1d5db;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+/* Stats Panel */
+#stats-content {
+    padding: 1rem;
+    color: white;
+}
+
+.stats-overview {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.stat-item {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.stat-item label {
+    display: block;
+    font-size: 0.9rem;
+    color: #9ca3af;
+    margin-bottom: 0.5rem;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #4ade80;
+}
+
+.position-stats h4 {
+    color: #ffd700;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+.position-stat {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+}
+
+.position-name {
+    font-weight: bold;
+    color: #f3f4f6;
+}
+
+.position-accuracy {
+    color: #4ade80;
+    font-weight: bold;
+}
+
+/* Button Styles */
+.btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 6px;
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+}
+
+.btn.danger {
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
+}
+
+/* Toggle Coach Button (fixed position) */
+#toggle-coach-btn {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 9999;
+    padding: 8px 16px;
+    background: #4ade80;
+    color: #000;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+#toggle-coach-btn:hover {
+    background: #22c55e;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(34, 197, 94, 0.4);
+}
+
+/* Session Stats (if added dynamically) */
+.session-stats {
+    margin-bottom: 2rem;
+}
+
+.session-stat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.session-stat {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 0.75rem;
+    border-radius: 6px;
+    text-align: center;
+}
+
+.stat-label {
+    display: block;
+    font-size: 0.8rem;
+    color: #9ca3af;
+    margin-bottom: 0.25rem;
+}
+
+.stat-value.excellent { color: #10b981; }
+.stat-value.good { color: #3b82f6; }
+.stat-value.average { color: #f59e0b; }
+.stat-value.needs-improvement { color: #ef4444; }
+
+.stat-value.hot-streak { color: #f59e0b; animation: pulse 1s infinite; }
+.stat-value.good-streak { color: #10b981; }
+.stat-value.building-streak { color: #3b82f6; }
+
+.position-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+}
+
+.position-count {
+    font-size: 0.8rem;
+    color: #9ca3af;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 0.25rem;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #3b82f6, #10b981);
+    transition: width 0.3s ease;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+/* Decision Feedback (temporary notifications) */
+.decision-feedback {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: bold;
+    z-index: 1001;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.decision-feedback.show {
+    transform: translateX(0);
+}
+
+.decision-feedback.correct {
+    border-left: 4px solid #10b981;
+}
+
+.decision-feedback.incorrect {
+    border-left: 4px solid #ef4444;
+}
+
+.feedback-position {
+    font-size: 0.9rem;
+    opacity: 0.7;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .panel {
+        width: 100vw;
+        right: -100vw;
+    }
+    
+    #toggle-coach-btn {
+        top: 5px;
+        right: 5px;
+        padding: 6px 12px;
+        font-size: 0.9rem;
+    }
+    
+    #coach-content {
+        padding: 0.75rem;
+    }
+    
+    #range-grid {
+        max-width: 280px;
+    }
+    
+    .range-cell {
+        font-size: 0.6rem;
+    }
+    
+    .stats-overview {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+    
+    .session-stat-grid {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+}
