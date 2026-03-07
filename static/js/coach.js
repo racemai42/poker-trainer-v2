@@ -176,20 +176,22 @@ const Coach = {
     getPlayerPosition() {
         if (!players || typeof button_index === 'undefined') return 'UTG';
         
-        const humanIndex = 0; // Human player is always at index 0
-        const activePlayers = [];
+        const humanIndex = 0;
         
-        // Build ordered list of active seat indices, starting from button going clockwise
+        // Walk clockwise from button, skipping only BUST players (not FOLD)
+        // This mimics how the game assigns SB, BB, UTG etc. at the start of each hand
+        const activePlayers = [];
+        let idx = button_index;
         for (let i = 0; i < players.length; i++) {
-            const seatIdx = (button_index + i) % players.length;
-            if (players[seatIdx].status !== 'BUST') {
-                activePlayers.push(seatIdx);
+            if (players[idx].status !== 'BUST') {
+                activePlayers.push(idx);
             }
+            idx = (idx + 1) % players.length;
         }
         
         const numPlayers = activePlayers.length;
         const relativePosition = activePlayers.indexOf(humanIndex);
-        console.log('[COACH DEBUG] button_index:', button_index, 'humanIndex:', humanIndex, 'activePlayers:', activePlayers, 'numPlayers:', numPlayers, 'relativePosition:', relativePosition);
+        console.log('[COACH DEBUG] button_index:', button_index, 'activePlayers:', activePlayers, 'relativePos:', relativePosition, 'numPlayers:', numPlayers);
         
         if (numPlayers === 6) {
             switch (relativePosition) {
@@ -210,16 +212,32 @@ const Coach = {
                 case 4: return 'CO';
                 default: return 'UTG';
             }
-        } else if (numPlayers <= 3) {
+        } else if (numPlayers === 4) {
+            switch (relativePosition) {
+                case 0: return 'BTN';
+                case 1: return 'SB';
+                case 2: return 'BB';
+                case 3: return 'CO';
+                default: return 'CO';
+            }
+        } else if (numPlayers === 3) {
             switch (relativePosition) {
                 case 0: return 'BTN';
                 case 1: return 'SB';
                 case 2: return 'BB';
                 default: return 'BTN';
             }
+        } else if (numPlayers === 2) {
+            switch (relativePosition) {
+                case 0: return 'BTN';
+                case 1: return 'BB';
+                default: return 'BTN';
+            }
         }
         
-        return 'UTG'; // Default fallback
+        // For 7+ players, use generic mapping
+        const positions7plus = ['BTN','SB','BB','UTG','UTG','MP','CO'];
+        return positions7plus[Math.min(relativePosition, positions7plus.length - 1)] || 'UTG';
     },
 
     /**
