@@ -191,7 +191,7 @@ const Coach = {
         
         const numPlayers = activePlayers.length;
         const relativePosition = activePlayers.indexOf(humanIndex);
-        console.log('[COACH DEBUG] button_index:', button_index, 'activePlayers:', activePlayers, 'relativePos:', relativePosition, 'numPlayers:', numPlayers);
+
         
         if (numPlayers === 6) {
             switch (relativePosition) {
