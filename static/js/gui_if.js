@@ -435,7 +435,7 @@ function gui_disable_shortcut_keys (func) {
 function internal_get_theme_mode () {
   var mode = getLocalStorage("currentmode");
   if (mode === null) {  // first time
-    mode = "light";
+    mode = "darker";
   }
   return mode;
 }
