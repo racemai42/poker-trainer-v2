@@ -177,11 +177,18 @@ const Coach = {
         if (!players || typeof button_index === 'undefined') return 'UTG';
         
         const humanIndex = 0; // Human player is always at index 0
-        const activePlayers = players.filter(p => p.status !== 'BUST');
-        const numPlayers = activePlayers.length;
+        const activePlayers = [];
         
-        // Calculate position relative to button
-        let relativePosition = (humanIndex - button_index + players.length) % players.length;
+        // Build ordered list of active seat indices, starting from button going clockwise
+        for (let i = 0; i < players.length; i++) {
+            const seatIdx = (button_index + i) % players.length;
+            if (players[seatIdx].status !== 'BUST') {
+                activePlayers.push(seatIdx);
+            }
+        }
+        
+        const numPlayers = activePlayers.length;
+        const relativePosition = activePlayers.indexOf(humanIndex);
         
         if (numPlayers === 6) {
             switch (relativePosition) {
