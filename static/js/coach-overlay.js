@@ -1,6 +1,6 @@
 "use strict";
 
-// Coach Overlay for Poker Trainer V2
+// Coach Overlay for Poker Trainer V2 - Range Image Version
 // Hooks into existing JS_CSS_Poker game without modifying core files
 
 // Stats tracking
@@ -17,15 +17,39 @@ let coachStats = {
     }
 };
 
-// Pre-flop GTO ranges (6-max)
+// Pre-flop GTO ranges (6-max) - same data used to generate the images
 const openingRanges = {
-    UTG: ["22+", "A2s+", "KTs+", "QTs+", "JTs", "T9s", "ATo+", "KJo+"],
-    MP: ["22+", "A2s+", "K9s+", "Q9s+", "J9s+", "T9s", "98s", "A9o+", "KTo+", "QJo"],
-    CO: ["22+", "A2s+", "K5s+", "Q8s+", "J8s+", "T8s+", "97s+", "87s", "76s", "A5o+", "K9o+", "QTo+", "JTo"],
-    BTN: ["22+", "A2s+", "K2s+", "Q5s+", "J7s+", "T7s+", "96s+", "86s+", "75s+", "65s", "54s", "A2o+", "K7o+", "Q9o+", "J9o+", "T9o"],
-    SB: ["22+", "A2s+", "K4s+", "Q7s+", "J8s+", "T8s+", "97s+", "86s+", "76s", "65s", "A4o+", "K9o+", "QTo+", "JTo"],
-    BB: ["22+", "A2s+", "K2s+", "Q2s+", "J5s+", "T6s+", "96s+", "86s+", "75s+", "65s", "54s", "A2o+", "K5o+", "Q8o+", "J8o+", "T8o+", "98o"]
+    UTG: {
+        percentage: "~15%",
+        hands: ["22+", "A2s+", "KTs+", "QTs+", "JTs", "T9s", "ATo+", "KJo+"]
+    },
+    MP: {
+        percentage: "~18%", 
+        hands: ["22+", "A2s+", "K9s+", "Q9s+", "J9s+", "T9s", "98s", "A9o+", "KTo+", "QJo"]
+    },
+    CO: {
+        percentage: "~27%",
+        hands: ["22+", "A2s+", "K5s+", "Q8s+", "J8s+", "T8s+", "97s+", "87s", "76s", "A5o+", "K9o+", "QTo+", "JTo"]
+    },
+    BTN: {
+        percentage: "~40%",
+        hands: ["22+", "A2s+", "K2s+", "Q5s+", "J7s+", "T7s+", "96s+", "86s+", "75s+", "65s", "54s", "A2o+", "K7o+", "Q9o+", "J9o+", "T9o"]
+    },
+    SB: {
+        percentage: "~35%",
+        hands: ["22+", "A2s+", "K4s+", "Q7s+", "J8s+", "T8s+", "97s+", "86s+", "76s", "65s", "A4o+", "K9o+", "QTo+", "JTo"]
+    },
+    BB: {
+        percentage: "~40%",
+        hands: ["22+", "A2s+", "K2s+", "Q2s+", "J5s+", "T6s+", "96s+", "86s+", "75s+", "65s", "54s", "A2o+", "K5o+", "Q8o+", "J8o+", "T8o+", "98o"]
+    }
 };
+
+// Grid mapping constants
+const RANKS = ['A','K','Q','J','T','9','8','7','6','5','4','3','2'];
+const IMAGE_BASE_X = 44;
+const IMAGE_BASE_Y = 36;
+const CELL_SIZE = 42;
 
 // Hand parser to convert "AKs", "22", etc. to check against player's cards
 function parseRangeToHands(rangeArray) {
@@ -144,60 +168,123 @@ function isHandInRange(hand, rangeSet) {
     return rangeSet.has(hand);
 }
 
-function createRangeGrid(position, playerHand, isCorrect) {
-    const ranks = ["A", "K", "Q", "J", "T", "9", "8", "7", "6", "5", "4", "3", "2"];
-    const rangeSet = parseRangeToHands(openingRanges[position] || []);
+function getHandGridPosition(hand) {
+    // Convert hand to grid coordinates for highlighting on the image
+    let rank1, rank2, suited = false;
     
-    let gridHTML = '<div class="range-grid">';
-    
-    // Header row
-    gridHTML += '<div class="range-row">';
-    gridHTML += '<div class="range-cell header"></div>';
-    for (let col of ranks) {
-        gridHTML += `<div class="range-cell header">${col}</div>`;
+    if (hand.length === 2) {
+        // Pocket pair like "AA", "KK"
+        rank1 = rank2 = hand[0];
+    } else if (hand.length === 3) {
+        // Non-pair like "AKs" or "AKo"
+        rank1 = hand[0];
+        rank2 = hand[1];
+        suited = hand[2] === 's';
     }
-    gridHTML += '</div>';
     
-    // Data rows
-    for (let i = 0; i < ranks.length; i++) {
-        gridHTML += '<div class="range-row">';
-        gridHTML += `<div class="range-cell header">${ranks[i]}</div>`;
+    const row = RANKS.indexOf(rank1);
+    const col = RANKS.indexOf(rank2);
+    
+    if (row === -1 || col === -1) return null;
+    
+    let finalRow, finalCol;
+    
+    if (row === col) {
+        // Pocket pair - use diagonal
+        finalRow = finalCol = row;
+    } else if (suited) {
+        // Suited - upper triangle (row < col)
+        finalRow = Math.min(row, col);
+        finalCol = Math.max(row, col);
+    } else {
+        // Offsuit - lower triangle (row > col)
+        finalRow = Math.max(row, col);
+        finalCol = Math.min(row, col);
+    }
+    
+    return {
+        x: IMAGE_BASE_X + finalCol * CELL_SIZE,
+        y: IMAGE_BASE_Y + finalRow * CELL_SIZE,
+        width: CELL_SIZE,
+        height: CELL_SIZE
+    };
+}
+
+function createRangeImageDisplay(position, playerHand, isCorrect) {
+    const imagePath = `static/images/ranges/${position}.png`;
+    const handPosition = getHandGridPosition(playerHand);
+    
+    const containerId = `range-container-${Date.now()}`;
+    const canvasId = `range-canvas-${Date.now()}`;
+    
+    let html = `
+        <div class="range-image-container" id="${containerId}">
+            <img src="${imagePath}" alt="${position} Range" class="range-image" onload="highlightPlayerHand('${canvasId}', ${JSON.stringify(handPosition).replace(/"/g, '&quot;')})">
+            <canvas id="${canvasId}" class="range-overlay-canvas"></canvas>
+        </div>
+    `;
+    
+    return html;
+}
+
+function highlightPlayerHand(canvasId, position) {
+    if (!position) return;
+    
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+    
+    const img = canvas.previousElementSibling;
+    if (!img) return;
+    
+    // Set canvas size to match image
+    canvas.width = img.naturalWidth;
+    canvas.height = img.naturalHeight;
+    
+    const ctx = canvas.getContext('2d');
+    
+    // Draw highlight rectangle
+    ctx.strokeStyle = '#ff6b35'; // Bright orange
+    ctx.lineWidth = 3;
+    ctx.shadowColor = '#ff6b35';
+    ctx.shadowBlur = 10;
+    
+    // Draw pulsing border
+    let alpha = 1;
+    let increasing = false;
+    
+    function drawPulse() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
         
-        for (let j = 0; j < ranks.length; j++) {
-            let hand, cellClass;
-            
-            if (i === j) {
-                // Pocket pairs (diagonal)
-                hand = ranks[i] + ranks[i];
-                cellClass = "pair";
-            } else if (i < j) {
-                // Suited hands (upper triangle)
-                hand = ranks[j] + ranks[i] + "s";
-                cellClass = "suited";
-            } else {
-                // Offsuit hands (lower triangle)
-                hand = ranks[i] + ranks[j] + "o";
-                cellClass = "offsuit";
-            }
-            
-            const inRange = isHandInRange(hand, rangeSet);
-            const isPlayerHand = hand === playerHand;
-            
-            if (inRange) {
-                cellClass += " in-range";
-            }
-            if (isPlayerHand) {
-                cellClass += " player-hand";
-            }
-            
-            gridHTML += `<div class="range-cell ${cellClass}" title="${hand}">${hand}</div>`;
+        ctx.globalAlpha = alpha;
+        ctx.strokeRect(position.x, position.y, position.width, position.height);
+        
+        // Add inner glow
+        ctx.strokeStyle = '#ffeb3b'; // Yellow inner glow
+        ctx.lineWidth = 1;
+        ctx.strokeRect(position.x + 1, position.y + 1, position.width - 2, position.height - 2);
+        
+        // Reset for next frame
+        ctx.strokeStyle = '#ff6b35';
+        ctx.lineWidth = 3;
+        
+        // Update alpha for pulsing effect
+        if (increasing) {
+            alpha += 0.03;
+            if (alpha >= 1) increasing = false;
+        } else {
+            alpha -= 0.03;
+            if (alpha <= 0.4) increasing = true;
         }
-        gridHTML += '</div>';
     }
     
-    gridHTML += '</div>';
+    // Start pulsing animation
+    const pulseInterval = setInterval(drawPulse, 50);
+    drawPulse();
     
-    return gridHTML;
+    // Stop pulsing when modal is closed
+    setTimeout(() => {
+        clearInterval(pulseInterval);
+    }, 8000);
 }
 
 function showPreflopCoaching(action, betAmount) {
@@ -205,7 +292,8 @@ function showPreflopCoaching(action, betAmount) {
     const card1 = players[0].carda;
     const card2 = players[0].cardb;
     const playerHand = convertCardToRange(card1, card2);
-    const rangeSet = parseRangeToHands(openingRanges[position] || []);
+    const rangeData = openingRanges[position];
+    const rangeSet = parseRangeToHands(rangeData.hands);
     const shouldPlay = isHandInRange(playerHand, rangeSet);
     
     let isCorrect = false;
@@ -224,10 +312,10 @@ function showPreflopCoaching(action, betAmount) {
     }
     saveStats();
     
-    const gridHTML = createRangeGrid(position, playerHand, isCorrect);
+    const rangeImageHTML = createRangeImageDisplay(position, playerHand, isCorrect);
     
     const correctnessIcon = isCorrect ? "✅" : "❌";
-    const correctnessText = isCorrect ? "Correct" : "Mistake";
+    const correctnessText = isCorrect ? "Correct!" : "Mistake!";
     const correctnessClass = isCorrect ? "correct" : "mistake";
     
     let explanation = "";
@@ -236,7 +324,7 @@ function showPreflopCoaching(action, betAmount) {
     } else if (isCorrect && !shouldPlay) {
         explanation = `${playerHand} is not in the ${position} opening range. Good fold!`;
     } else if (!isCorrect && shouldPlay) {
-        explanation = `${playerHand} is a good hand for ${position}. Consider playing it more often.`;
+        explanation = `${playerHand} is a profitable hand for ${position}. Consider playing it more often.`;
     } else {
         explanation = `${playerHand} is usually too weak for ${position}. Folding saves money in the long run.`;
     }
@@ -249,21 +337,22 @@ function showPreflopCoaching(action, betAmount) {
             </div>
             <div class="coach-content">
                 <div class="position-info">
-                    <span class="position-label">Position: ${position}</span>
-                    <span class="correctness ${correctnessClass}">${correctnessIcon} ${correctnessText}</span>
+                    <div class="position-label">${position} Position</div>
+                    <div class="percentage-label">${rangeData.percentage}</div>
+                    <div class="correctness ${correctnessClass}">
+                        <span class="icon">${correctnessIcon}</span>
+                        <span class="text">${correctnessText}</span>
+                    </div>
                 </div>
-                <div class="range-container">
-                    <h4>${position} Opening Range</h4>
-                    ${gridHTML}
+                
+                <div class="range-display">
+                    <h4>${position} Opening Range Chart</h4>
+                    ${rangeImageHTML}
                 </div>
+                
                 <div class="explanation">
+                    <strong>Your hand: ${playerHand}</strong><br>
                     ${explanation}
-                </div>
-                <div class="legend">
-                    <div class="legend-item"><span class="legend-color pair"></span> Pocket Pairs</div>
-                    <div class="legend-item"><span class="legend-color suited"></span> Suited Hands</div>
-                    <div class="legend-item"><span class="legend-color offsuit"></span> Offsuit Hands</div>
-                    <div class="legend-item"><span class="legend-color player-hand"></span> Your Hand</div>
                 </div>
             </div>
         </div>
@@ -272,6 +361,7 @@ function showPreflopCoaching(action, betAmount) {
     showCoachModal(modalContent);
 }
 
+// Post-flop analysis functions
 function analyzeHand() {
     const humanPlayer = players[0];
     const handResult = analyzePlayerHand(humanPlayer);
@@ -366,71 +456,61 @@ function analyzeBoardTexture() {
     return { texture, paired, monotone, twotone, connected };
 }
 
-function getPostflopRecommendation(handAnalysis, boardAnalysis, position, potSize, betSize) {
+function getPostflopRecommendation(handAnalysis, boardAnalysis, position) {
     const { strength, hand, draw } = handAnalysis;
     const { texture } = boardAnalysis;
     
     let recommendation = "";
     let reasoning = "";
-    let icon = "";
+    let color = "";
     
     if (strength === "monster") {
-        icon = "⭐";
-        recommendation = "Bet big for value!";
-        reasoning = `You have ${hand.hand_name}. This is a monster hand - bet 75-100% pot to build value and protect against draws.`;
+        color = "green";
+        recommendation = "Value bet big!";
+        reasoning = `${hand.hand_name} is a monster hand. Bet 75-100% pot to build value and protect against draws.`;
     } else if (strength === "strong") {
-        icon = "🟢";
+        color = "green";
         if (texture === "very wet" || texture === "wet") {
             recommendation = "Bet for value and protection";
-            reasoning = `${hand.hand_name} is strong but the ${texture} board is dangerous. Bet 60-75% pot to charge draws and build the pot.`;
+            reasoning = `${hand.hand_name} is strong but the ${texture} board is dangerous. Bet 60-75% pot.`;
         } else {
-            recommendation = "Bet for value";
+            recommendation = "Value bet";
             reasoning = `${hand.hand_name} on this ${texture} board. Bet 50-75% pot for value.`;
         }
     } else if (strength === "draw") {
-        icon = "🔵";
+        color = "yellow";
         if (draw) {
             const outs = hand.hand_name.includes("Combo") ? "12+" : (hand.hand_name.includes("Flush") ? "9" : "8");
-            recommendation = "Good semi-bluff opportunity";
-            reasoning = `You have a ${hand.hand_name} with ~${outs} outs. This is a good spot to bet as a semi-bluff or check-call for pot odds.`;
+            recommendation = "Semi-bluff or check-call";
+            reasoning = `You have a ${hand.hand_name} with ~${outs} outs. Good spot to bet as a semi-bluff or check-call for pot odds.`;
         }
     } else if (strength === "medium") {
-        icon = "🟡";
+        color = "yellow";
         if (texture === "very wet" || texture === "wet") {
             recommendation = "Check for pot control";
-            reasoning = `${hand.hand_name} is vulnerable on this ${texture} board. Consider checking to control pot size or betting small.`;
+            reasoning = `${hand.hand_name} is vulnerable on this ${texture} board. Consider checking or betting small.`;
         } else {
-            recommendation = "Small bet for thin value";
-            reasoning = `${hand.hand_name} likely has some value on this ${texture} board. Bet small or check-call.`;
+            recommendation = "Thin value bet or check";
+            reasoning = `${hand.hand_name} likely has some value on this ${texture} board.`;
         }
     } else {
-        icon = "🔴";
-        if (betSize > potSize * 0.5) {
-            recommendation = "Consider folding";
-            reasoning = "With no pair or draw, facing a large bet is usually unprofitable. Save your chips for better spots.";
-        } else {
-            recommendation = "Check and give up";
-            reasoning = "High card hands have little value. Check behind or fold to any bet.";
-        }
+        color = "red";
+        recommendation = "Check and give up";
+        reasoning = "High card hands have little value. Check behind or fold to big bets.";
     }
     
-    return { icon, recommendation, reasoning };
+    return { recommendation, reasoning, color };
 }
 
 function showPostflopCoaching(action, betAmount) {
     const handAnalysis = analyzeHand();
     const boardAnalysis = analyzeBoardTexture();
     const position = getPlayerPosition();
-    const potSize = get_pot_size();
-    const rec = getPostflopRecommendation(handAnalysis, boardAnalysis, position, potSize, betAmount);
+    const rec = getPostflopRecommendation(handAnalysis, boardAnalysis, position);
     
-    // Simplified correctness check
-    let isCorrect = true; // We'll be less strict on post-flop for now
-    
+    // Update stats (simplified correctness)
     coachStats.postflop.total++;
-    if (isCorrect) {
-        coachStats.postflop.correct++;
-    }
+    coachStats.postflop.correct++; // Being generous on post-flop
     saveStats();
     
     const street = !board[0] ? "Pre-flop" : (!board[3] ? "Flop" : (!board[4] ? "Turn" : "River"));
@@ -451,9 +531,8 @@ function showPostflopCoaching(action, betAmount) {
                 </div>
                 
                 <div class="board-texture">
-                    <h4>Board Texture</h4>
-                    <div class="texture-info">
-                        <span class="texture">${boardAnalysis.texture.toUpperCase()}</span>
+                    <h4>Board Texture: ${boardAnalysis.texture.toUpperCase()}</h4>
+                    <div class="texture-features">
                         ${boardAnalysis.paired ? '<span class="feature">Paired</span>' : ''}
                         ${boardAnalysis.monotone ? '<span class="feature">Monotone</span>' : ''}
                         ${boardAnalysis.twotone ? '<span class="feature">Two-tone</span>' : ''}
@@ -461,15 +540,10 @@ function showPostflopCoaching(action, betAmount) {
                     </div>
                 </div>
                 
-                <div class="recommendation">
-                    <h4>Recommendation</h4>
-                    <div class="rec-content">
-                        <span class="rec-icon">${rec.icon}</span>
-                        <span class="rec-text">${rec.recommendation}</span>
-                    </div>
-                    <div class="reasoning">
-                        ${rec.reasoning}
-                    </div>
+                <div class="recommendation ${rec.color}">
+                    <h4>💡 Recommendation</h4>
+                    <div class="rec-text">${rec.recommendation}</div>
+                    <div class="reasoning">${rec.reasoning}</div>
                 </div>
             </div>
         </div>
@@ -490,10 +564,10 @@ function showCoachModal(content) {
     modal.innerHTML = content;
     modal.style.display = 'flex';
     
-    // Auto-close after 12 seconds
+    // Auto-close after 8 seconds
     setTimeout(() => {
         closeCoachModal();
-    }, 12000);
+    }, 8000);
 }
 
 function closeCoachModal() {
@@ -573,7 +647,6 @@ function resetStats() {
 // Hook into existing game functions
 let lastAction = null;
 let lastBetAmount = 0;
-let gamePhase = "waiting";
 
 function monitorGameState() {
     // Check if human player just acted
@@ -652,3 +725,4 @@ if (document.readyState === 'loading') {
 window.closeCoachModal = closeCoachModal;
 window.showStats = showStats;
 window.resetStats = resetStats;
+window.highlightPlayerHand = highlightPlayerHand;
