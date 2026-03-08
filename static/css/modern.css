@@ -1,0 +1,446 @@
+/* Modern UI Override for JS_CSS_Poker — poker-trainer-v2 */
+/* Layered on top of poker.css without modifying core files */
+
+/* ========== GLOBAL LAYOUT ========== */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    overflow: hidden;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #1a1a2e;
+}
+
+/* Container to center everything */
+#game-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    width: 100vw;
+    position: relative;
+}
+
+/* ========== TABLE ========== */
+.poker-table {
+    position: relative !important;
+    left: auto !important;
+    /* Scale up the table — original is 745×411 */
+    width: 900px !important;
+    height: 500px !important;
+    background-size: 100% 100% !important;
+    border-radius: 200px;
+    /* Glow effect */
+    filter: drop-shadow(0 0 40px rgba(0, 100, 0, 0.3));
+}
+
+/* ========== CARDS ========== */
+.card {
+    height: 96px !important;
+    width: 66px !important;
+    background-size: 100% 100% !important;
+    border-radius: 6px !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    scale: 1.4 !important;
+    translate: 0% -30% !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.7);
+    z-index: 100;
+}
+
+.holecards {
+    height: 96px !important;
+    width: 134px !important;
+    left: 8px !important;
+    top: 0px !important;
+}
+
+.holecard2 {
+    left: 68px !important;
+}
+
+.boardcard {
+    height: 96px !important;
+    width: 66px !important;
+    top: -15px !important;
+    background-size: 100% 100% !important;
+}
+
+#flop2 { left: 70px !important; }
+#flop3 { left: 140px !important; }
+#turn  { left: 220px !important; }
+#river { left: 290px !important; }
+
+#burn1 { left: 370px !important; }
+#burn2 { left: 380px !important; }
+#burn3 { left: 390px !important; }
+
+#board {
+    left: 50% !important;
+    transform: translateX(-55%);
+    top: 185px !important;
+}
+
+/* ========== SEATS — scaled positions for 900×500 table ========== */
+.seat {
+    width: 160px !important;
+    height: 140px !important;
+}
+
+/* Name/chip labels */
+.name-chips {
+    background: linear-gradient(135deg, rgba(30, 30, 50, 0.9), rgba(50, 50, 80, 0.9)) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px !important;
+    font-size: 13px !important;
+    height: auto !important;
+    min-height: 36px;
+    padding: 4px 8px;
+    top: 90px !important;
+    width: 150px !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
+}
+
+.player-name {
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    color: #e8e8f0 !important;
+}
+
+.chips {
+    color: #ffd700 !important;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/* Seat positions — recalculated for 900×500 */
+/* Bottom center (player) */
+#seat0 {
+    left: 50px !important;
+    top: 380px !important;
+}
+.seat0-button { left: 290px !important; top: 455px !important; }
+#seat0 .bet { top: -25px !important; }
+#seat0 .name-chips {
+    background: linear-gradient(135deg, rgba(20, 60, 20, 0.9), rgba(30, 80, 30, 0.9)) !important;
+    border-color: rgba(74, 222, 128, 0.4) !important;
+}
+
+/* Left */
+#seat1 {
+    left: -60px !important;
+    top: 180px !important;
+}
+.seat1-button { left: 185px !important; top: 270px !important; }
+#seat1 .bet { top: 100px !important; left: 120px !important; }
+
+/* Top-left */
+#seat2 {
+    left: 30px !important;
+    top: 0px !important;
+}
+.seat2-button { left: 280px !important; top: 80px !important; }
+#seat2 .bet { top: 110px !important; }
+
+/* Top-center-left */
+#seat3 {
+    left: 240px !important;
+    top: -10px !important;
+}
+.seat3-button { left: 340px !important; top: 80px !important; }
+#seat3 .bet { top: 110px !important; }
+
+/* Top-center-right */
+#seat4 {
+    left: 480px !important;
+    top: -10px !important;
+}
+.seat4-button { left: 580px !important; top: 80px !important; }
+#seat4 .bet { top: 110px !important; }
+
+/* Top-right */
+#seat5 {
+    left: 720px !important;
+    top: 0px !important;
+}
+.seat5-button { left: 820px !important; top: 80px !important; }
+#seat5 .bet { top: 110px !important; }
+
+/* Right */
+#seat6 {
+    left: 800px !important;
+    top: 180px !important;
+}
+.seat6-button { left: 890px !important; top: 270px !important; }
+#seat6 .bet { top: 100px !important; left: -40px !important; }
+
+/* Bottom-right */
+#seat7 {
+    left: 720px !important;
+    top: 380px !important;
+}
+.seat7-button { left: 820px !important; top: 455px !important; }
+#seat7 .bet { top: -25px !important; }
+
+/* Bottom-center-right */
+#seat8 {
+    left: 480px !important;
+    top: 390px !important;
+}
+.seat8-button { left: 580px !important; top: 460px !important; }
+#seat8 .bet { top: -25px !important; }
+
+/* Bottom-center-left */
+#seat9 {
+    left: 240px !important;
+    top: 390px !important;
+}
+.seat9-button { left: 340px !important; top: 460px !important; }
+#seat9 .bet { top: -25px !important; }
+
+/* ========== POT ========== */
+#pot {
+    left: 50% !important;
+    transform: translateX(-50%);
+    top: 300px !important;
+    font-size: 18px !important;
+    font-weight: 700;
+    color: #ffd700 !important;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5), 0 2px 4px rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.4);
+    padding: 4px 16px;
+    border-radius: 20px;
+    backdrop-filter: blur(4px);
+    white-space: nowrap;
+}
+
+/* ========== BET AMOUNTS ========== */
+.bet {
+    font-size: 14px !important;
+    font-weight: 600;
+    color: #fff !important;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 2px 8px;
+    border-radius: 12px;
+    white-space: nowrap;
+    text-shadow: none !important;
+}
+
+/* ========== DEALER BUTTON ========== */
+#button {
+    width: 30px !important;
+    height: 24px !important;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+    z-index: 50;
+}
+
+/* ========== ACTION BUTTONS ========== */
+#action-options {
+    position: fixed !important;
+    bottom: 20px !important;
+    left: 50% !important;
+    transform: translateX(-50%);
+    top: auto !important;
+    display: flex;
+    gap: 12px;
+    z-index: 500;
+    width: auto !important;
+    height: auto !important;
+}
+
+.action-button {
+    position: relative !important;
+    left: auto !important;
+    top: auto !important;
+    min-width: 100px;
+    height: auto !important;
+    padding: 12px 24px !important;
+    font-size: 16px !important;
+    font-weight: 700;
+    border-radius: 12px !important;
+    border: none;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.action-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4) !important;
+}
+
+.action-button:active {
+    transform: translateY(0);
+}
+
+/* Fold button — red */
+#fold-button {
+    background: linear-gradient(135deg, #dc2626, #991b1b) !important;
+    color: white !important;
+}
+#fold-button:hover {
+    background: linear-gradient(135deg, #ef4444, #b91c1c) !important;
+}
+
+/* Call button — green */
+#call-button {
+    left: auto !important;
+    background: linear-gradient(135deg, #16a34a, #15803d) !important;
+    color: white !important;
+}
+#call-button:hover {
+    background: linear-gradient(135deg, #22c55e, #16a34a) !important;
+}
+
+/* ========== QUICK RAISES ========== */
+#quick-raises {
+    position: fixed !important;
+    bottom: 80px !important;
+    left: 50% !important;
+    transform: translateX(-50%);
+    top: auto !important;
+    background: linear-gradient(135deg, rgba(30, 30, 60, 0.95), rgba(40, 40, 80, 0.95)) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px !important;
+    padding: 10px 20px;
+    font-size: 16px !important;
+    color: white;
+    backdrop-filter: blur(10px);
+    width: auto !important;
+    height: auto !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+#quick-raises a:link,
+#quick-raises a:visited {
+    color: #93c5fd !important;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: all 0.15s ease;
+}
+
+#quick-raises a:hover {
+    color: white !important;
+    background: rgba(59, 130, 246, 0.3);
+    text-shadow: none !important;
+}
+
+/* ========== SETUP BUTTONS (right side) ========== */
+#setup-options {
+    position: fixed !important;
+    top: 60px !important;
+    right: 20px !important;
+    left: auto !important;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 500;
+    width: auto !important;
+    height: auto !important;
+}
+
+.setup-button {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    width: auto !important;
+    min-width: 140px;
+    padding: 8px 16px !important;
+    background: rgba(40, 40, 70, 0.9) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px !important;
+    color: #c8c8e0 !important;
+    font-size: 14px !important;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-align: center;
+    backdrop-filter: blur(4px);
+    height: auto !important;
+}
+
+.setup-button:hover {
+    background: rgba(60, 60, 100, 0.95) !important;
+    border-color: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3) !important;
+    color: white !important;
+}
+
+#speed-button { cursor: pointer !important; }
+
+select {
+    background: rgba(60, 60, 100, 0.9) !important;
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 4px !important;
+    padding: 2px;
+}
+
+/* ========== GAME RESPONSE ========== */
+#game-response {
+    position: fixed !important;
+    top: 10px !important;
+    left: 50% !important;
+    transform: translateX(-50%);
+    width: auto !important;
+    max-width: 600px;
+    font-size: 14px !important;
+    color: #e0e0f0 !important;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 6px 20px;
+    border-radius: 20px;
+    backdrop-filter: blur(4px);
+    z-index: 100;
+    height: auto !important;
+}
+
+#production-code {
+    position: fixed !important;
+    bottom: 5px !important;
+    right: 5px !important;
+    left: auto !important;
+    top: auto !important;
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.2) !important;
+    width: auto !important;
+}
+
+/* ========== HISTORY (hide by default, too noisy) ========== */
+#history {
+    display: none;
+}
+
+/* ========== MODAL ========== */
+#modal-box {
+    background: rgba(20, 20, 40, 0.97) !important;
+    backdrop-filter: blur(10px);
+}
+
+/* ========== DARKER THEME OVERRIDES ========== */
+/* Since body background is set by JS theme system, we only enhance */
+body {
+    background: #1a1a2e !important;
+}
+
+/* ========== COACH BUTTON — adjust position with new layout ========== */
+#toggle-coach-btn {
+    top: 10px !important;
+    right: 170px !important;
+}
+
+/* ========== ANIMATIONS ========== */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.poker-table {
+    animation: fadeIn 0.5s ease;
+}

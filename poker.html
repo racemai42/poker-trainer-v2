@@ -6,6 +6,7 @@
    <link rel="stylesheet" href="static/css/text.css" type="text/css">
    <!-- -->
    <link rel="stylesheet" href="static/css/poker.css" type="text/css">
+   <link rel="stylesheet" href="static/css/modern.css" type="text/css">
 
    <link rel="shortcut icon" href="static/images/chip5.png" />
    <link rel="stylesheet" href="static/css/phone.css" type="text/css"
@@ -21,6 +22,7 @@
    <script src="static/js/coach.js"></script>
 </head>
 <body onload="parent.init()">
+  <div id="game-wrapper">
     <div id="poker_table" class="poker-table" data-uid="">
         <div id="seat0" class="seat">
             <div class="holecards">
@@ -148,6 +150,7 @@
         </div>
     </div>
     <div id="button" class="seat6-button"></div>
+  </div><!-- /game-wrapper -->
     <div id="history"></div>
     <div id="action-options">
         <div id="fold-button" class="action-button"></div>
